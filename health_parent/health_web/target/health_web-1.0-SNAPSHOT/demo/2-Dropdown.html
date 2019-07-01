@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>下拉菜单</title>
+    <!--方式二：不联网-->
+    <!--<link rel="stylesheet" href="../js/index.css">
+    <script src="../js/vue.js"></script>
+    <script src="../js/index.js"></script>-->
+    <!-- 引入ElementUI样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- 引入ElementUI组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        .el-dropdown-link {
+            cursor: pointer;
+            color: #409EFF;
+        }
+        .el-icon-arrow-down {
+            font-size: 12px;
+        }
+        .demonstration {
+            display: block;
+            color: #8492a6;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!--<el-dropdown  split-button trigger="click">
+      <span class="el-dropdown-link">
+        下拉菜单
+      </span>
+        <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-circle-check-outline">蚵仔煎</el-dropdown-item>
+        </el-dropdown-menu>
+    </el-dropdown>-->
+
+    <el-dropdown split-button size="small" trigger="click">
+        个人中心
+        <el-dropdown-menu>
+            <el-dropdown-item >退出系统</el-dropdown-item>
+            <el-dropdown-item divided>修改密码</el-dropdown-item>
+            <el-dropdown-item divided>联系管理员</el-dropdown-item>
+        </el-dropdown-menu>
+    </el-dropdown>
+</div>
+<script>
+    new Vue({
+        el:"#app"
+    })
+</script>
+</body>
+</html>

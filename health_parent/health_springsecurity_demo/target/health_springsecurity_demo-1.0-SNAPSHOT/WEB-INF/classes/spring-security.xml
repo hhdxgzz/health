@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/mvc
+						http://www.springframework.org/schema/mvc/spring-mvc.xsd
+						http://code.alibabatech.com/schema/dubbo
+						http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+                          http://www.springframework.org/schema/security
+                          http://www.springframework.org/schema/security/spring-security.xsd">
+    <!--包扫描-->
+    <context:component-scan base-package="com"/>
+    <!--匿名访问资源css img js等
+    security="none":可以匿名访问
+    -->
+    <security:http security="none" pattern="/css/**"/>
+    <security:http security="none" pattern="/js/**"/>
+    <security:http security="none" pattern="/login.html"/>
+    <!--拦截所有请求 必须登录才可以访问index.jsp
+    auto-config：spring securtiy框架会自动生成登录页面 提供默认的登录请求 等
+    use-expressions：使用表达式 springEL
+    -->
+    <security:http auto-config="true" use-expressions="true">
+        <!--拦截规则配置 /**拦截所有请求
+        http://localhost:8080/a/b/c
+        hasRole:指定需要ROLE_ADMIN权限才可以访问/**路径
+        -->
+
+        <!--配置多种校验规则测试-->
+        <security:intercept-url pattern="/index.jsp"  access="isAuthenticated()" />
+        <!--isAuthenticated被认证后就可以被访问-->
+        <security:intercept-url pattern="/a.html"  access="isAuthenticated()" />
+
+        <!--拥有add权限就可以访问b.html页面-->
+        <security:intercept-url pattern="/b.html"  access="hasAuthority('add')" />
+
+        <!--拥有ROLE_ADMIN角色就可以访问c.html页面-->
+        <security:intercept-url pattern="/c.html"  access="hasRole('ROLE_ADMIN')" />
+
+        <!--拥有ROLE_ADMIN角色就可以访问d.html页面，
+            注意：此处虽然写的是ADMIN角色，框架会自动加上前缀ROLE_-->
+        <security:intercept-url pattern="/d.html"  access="hasRole('ADMIN')" />
+        <!--只要认证通过就可以访问-->
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"/>
+
+
+
+        <!--登录配置
+        login-processing-url：跟页面配置请求路径一样
+        username-parameter：跟页面表单账号名称保持一致
+        password-parameter：跟页面表单密码名称保持一致
+        authentication-success-forward-url：登录成功后页面
+        authentication-failure-forward-url:登录失败跳登录页面
+        login-page：登录页面
+        default-target-url:默认跳转页面
+        -->
+        <security:form-login login-processing-url="/login.do" username-parameter="username"
+                             password-parameter="password" default-target-url="/success.html"
+                             authentication-failure-forward-url="/login.html" login-page="/login.html"/>
+        <!--403 - Forbidden：被禁止  csrf:禁用(了解) 只需要禁用即可-->
+        <security:csrf disabled="true"/>
+
+        <!--登出
+        logout-url：登出请求
+        logout-success-url:登出后页面配置
+        invalidate-session:session失效
+        -->
+        <security:logout logout-url="/logout2.do" logout-success-url="/login.html" invalidate-session="true"/>
+    </security:http>
+
+    <!--配置认证管理器-->
+   <!-- <security:authentication-manager>
+        <security:authentication-provider>
+            <security:user-service>
+                &lt;!&ndash;spring security框架提供的入门案例认证方案
+                直接配置账号和密码 需要角色权限  {noop}:配置未加密认证
+                &ndash;&gt;
+                <security:user name="admin" password="{noop}admin" authorities="ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>-->
+
+     <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userService">
+            <!--指定当前加密方式
+            将页面用户输入的明文密码进行加密
+            加密后的密文跟数据库中密文进行对比
+            -->
+            <security:password-encoder ref="passwordEncoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <!--注入密码加密对象-->
+    <bean id="passwordEncoder"
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    <!--开启注解方式权限控制-->
+    <security:global-method-security pre-post-annotations="enabled" />
+
+    <!--<security:intercept-url针对页面  @PreAuthorize：针对请求-->
+</beans>
